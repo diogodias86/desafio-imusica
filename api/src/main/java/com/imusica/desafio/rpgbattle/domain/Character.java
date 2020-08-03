@@ -8,10 +8,10 @@ public abstract class Character {
     private int strength;
     private int defense;
     private int agility;
-    private String damageFactor;
+    private DamageFactor damageFactor;
 
     public Character(String name, int life, int strength, int defense,
-                     int agility, String damageFactor) {
+                     int agility, DamageFactor damageFactor) {
         this.name = name;
         this.life = life;
         this.strength = strength;
@@ -29,47 +29,38 @@ public abstract class Character {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public int getLife() {
         return life;
-    }
-
-    public void setLife(int life) {
-        this.life = life;
     }
 
     public int getStrength() {
         return strength;
     }
 
-    public void setStrength(int strength) {
-        this.strength = strength;
-    }
-
     public int getDefense() {
         return defense;
-    }
-
-    public void setDefense(int defense) {
-        this.defense = defense;
     }
 
     public int getAgility() {
         return agility;
     }
 
-    public void setAgility(int agility) {
-        this.agility = agility;
-    }
-
-    public String getDamageFactor() {
+    public DamageFactor getDamageFactor() {
         return damageFactor;
     }
 
-    public void setDamageFactor(String damageFactor) {
-        this.damageFactor = damageFactor;
+    public boolean isDied() {
+        return this.life <= 0;
+    }
+
+    public void sufferDamage(int damage) {
+        this.life -= damage;
+    }
+
+    public boolean attack(int diceValue, Character opponent) {
+        int myAttack = diceValue + this.getAgility() + this.getStrength();
+        int opponentDefense = diceValue + opponent.getAgility() + opponent.getDefense();
+
+        return (myAttack > opponentDefense);
     }
 }

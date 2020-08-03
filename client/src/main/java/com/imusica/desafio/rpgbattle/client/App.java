@@ -1,5 +1,7 @@
 package com.imusica.desafio.rpgbattle.client;
 
+import jdk.nashorn.internal.parser.JSONParser;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,10 +11,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
-public class App
-{
-    public static void main( String[] args )
-    {
+public class App {
+    public static void main(String[] args) {
         Scanner inputReader = new Scanner(System.in);
         String nickname = "";
         int heroType;
@@ -40,13 +40,26 @@ public class App
         System.out.println("");
         System.out.println("STARTING BATTLE.....");
 
-        makeRequest(nickname, heros[heroType]);
+        String result = makeRequest(nickname, heros[heroType]);
 
         System.out.println("================BATTLE FINISHED================");
-        System.out.println("RESULT: ");
+        if (!result.isEmpty()) {
+            JSONObject json = new JSONObject(result);
+            JSONObject jsonWinner = json.getJSONObject("winner");
+            JSONObject jsonRanking = json.getJSONObject("ranking");
+
+            System.out.println("RESULT: " + (jsonWinner.get("type").equals("MONSTER") ? "You Lose" : "You WIN!!!"));
+            System.out.println("RANKING: " + jsonRanking.toString());
+
+            System.out.println("===============================================");
+            System.out.println("");
+            System.out.println("BATTLE DETAILS: " + result);
+        } else {
+            System.out.println("NO RESULTS...");
+        }
     }
 
-    private static void makeRequest(String nickname, String heroType) {
+    private static String makeRequest(String nickname, String heroType) {
         try {
             HttpURLConnection httpClient = (HttpURLConnection) new URL("http://localhost:8080/api/battle")
                     .openConnection();
@@ -72,10 +85,14 @@ public class App
                     response.append(responseLine.trim());
                 }
 
-                System.out.println(response.toString());
+                //System.out.println(response.toString());
+
+                return response.toString();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return "";
     }
 }
